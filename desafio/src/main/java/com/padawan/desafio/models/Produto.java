@@ -8,7 +8,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "produto")
@@ -21,13 +20,23 @@ public class Produto {
 
     private String nome;
     private String descricao;
-    private Long tamanho;
+    private String tamanho;
     private BigDecimal preco;
 
-    @Size(min = 1, max = 2)
-    private String medida;
     private String url;
     private String diretorio;
+
+    public Produto() {}
+    
+    public Produto(Produto produto) {
+        this.idProduto = produto.idProduto;
+        this.nome = produto.nome;
+        this.descricao = produto.descricao;
+        this.tamanho = produto.tamanho;
+        this.preco = produto.preco;
+        this.url = produto.url;
+        this.diretorio = produto.diretorio;
+    }
 
     // #region Getters and Setters
     public Long getIdProduto() {
@@ -54,14 +63,6 @@ public class Produto {
         this.url = url;
     }
 
-    public String getMedida() {
-        return medida;
-    }
-
-    public void setMedida(String medida) {
-        this.medida = medida;
-    }
-
     public BigDecimal getPreco() {
         return preco;
     }
@@ -70,11 +71,11 @@ public class Produto {
         this.preco = preco;
     }
 
-    public Long getTamanho() {
+    public String getTamanho() {
         return tamanho;
     }
 
-    public void setTamanho(Long tamanho) {
+    public void setTamanho(String tamanho) {
         this.tamanho = tamanho;
     }
 
