@@ -7,10 +7,10 @@ create table produto(
     nome varchar(255) not null,
     descricao varchar(255) not null,
     tamanho bigint,
-    medida varchar(2) default '',
     preco decimal(5,2) not null,
-    url varchar(255) default '',
-    diretorio varchar(255) default ''
+    medida varchar(2) default '',
+    url varchar(255),
+    diretorio varchar(255)
 ); 
 
 create table cliente(
