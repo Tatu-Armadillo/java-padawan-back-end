@@ -6,6 +6,8 @@ import java.util.Optional;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
+import com.padawan.desafio.dto.ListImagem;
+import com.padawan.desafio.dto.PrecoProduto;
 import com.padawan.desafio.models.Produto;
 import com.padawan.desafio.repositories.ProdutoRepository;
 import com.padawan.desafio.services.ProdutoService;
@@ -28,6 +30,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequestMapping("/produto")
 public class ProdutosController {
 
+    private final PageRequest pageable = PageRequest.of(0, 5);
+
     @Autowired
     private ProdutoRepository produtoRepository;
 
@@ -36,8 +40,7 @@ public class ProdutosController {
 
     @GetMapping
     public Page<Produto> viewProduto() {
-        PageRequest pageable = PageRequest.of(0, 5);
-        Page<Produto> produto = produtoRepository.findAll(pageable);
+        Page<Produto> produto = produtoRepository.findAll(this.pageable);
         return produto;
     }
 
@@ -49,6 +52,18 @@ public class ProdutosController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/imagens")
+    public Page<ListImagem> listImages() {
+        Page<Produto> images = produtoRepository.findAll(this.pageable);
+        return ListImagem.transform(images);
+    }
+    
+    @GetMapping("/precos")
+    public Page<PrecoProduto> listPrecoProduto() {
+        Page<Produto> precos = produtoRepository.findAll(this.pageable);
+        return PrecoProduto.transform(precos);
     }
 
     @PostMapping
@@ -67,7 +82,7 @@ public class ProdutosController {
             UriComponentsBuilder uriComponentsBuilder) {
         produtoService.update(idProduto, produto);
         produto.setIdProduto(idProduto);        
-        return new Produto(produto);
+        return produto;
     }
 
     @DeleteMapping("/{idProduto}")
@@ -76,4 +91,6 @@ public class ProdutosController {
         produtoRepository.deleteById(idProduto);
         return ResponseEntity.ok().build();
     } 
+
+
 }
