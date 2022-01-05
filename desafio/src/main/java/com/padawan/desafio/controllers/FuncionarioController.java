@@ -54,17 +54,16 @@ public class FuncionarioController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<Funcionario> createProduto(@RequestBody @Valid Funcionario funcionario,
+    public ResponseEntity<Funcionario> createCliente(@RequestBody @Valid Funcionario funcionario,
             UriComponentsBuilder uriComponentsBuilder) {
         funcionarioRepository.save(funcionario);
-        URI uri = uriComponentsBuilder.path("/{idProduto}").buildAndExpand(funcionario.getIdFuncionario()).toUri();
+        URI uri = uriComponentsBuilder.path("/{idFuncionario}").buildAndExpand(funcionario.getIdFuncionario()).toUri();
         return ResponseEntity.created(uri).body(funcionario);
     }
 
     @PutMapping("/{idFuncionario}")
     @Transactional
-    public Funcionario updateFuncionario(@PathVariable Long idFuncionario, @RequestBody Funcionario funcionario,
-            UriComponentsBuilder uriComponentsBuilder) {
+    public Funcionario updateFuncionario(@PathVariable Long idFuncionario, @RequestBody Funcionario funcionario) {
         funcionarioService.update(idFuncionario, funcionario);
         funcionario.setIdFuncionario(idFuncionario);       
         funcionario.setDono(false); 
@@ -73,7 +72,7 @@ public class FuncionarioController {
 
     @DeleteMapping("/{idFuncionario}")
     @Transactional
-    public ResponseEntity<?> removeProduto(@PathVariable Long idFuncionario) {
+    public ResponseEntity<?> removeCliente(@PathVariable Long idFuncionario) {
         funcionarioRepository.deleteById(idFuncionario);
         return ResponseEntity.ok().build();
     } 

@@ -15,6 +15,9 @@ import com.padawan.desafio.services.ProdutoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,8 +33,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequestMapping("/produto")
 public class ProdutosController {
 
-    private final PageRequest pageable = PageRequest.of(0, 5);
-
     @Autowired
     private ProdutoRepository produtoRepository;
 
@@ -39,8 +40,9 @@ public class ProdutosController {
     private ProdutoService produtoService;
 
     @GetMapping
-    public Page<Produto> viewProduto() {
-        Page<Produto> produtos = produtoRepository.findAll(this.pageable);
+    public Page<Produto> viewProduto(
+            @PageableDefault(sort = "idProduto", direction = Direction.ASC) Pageable pageable) {
+        Page<Produto> produtos = produtoRepository.findAll(pageable);
         return produtos;
     }
 
@@ -56,13 +58,15 @@ public class ProdutosController {
 
     @GetMapping("/imagens")
     public Page<ListImagem> listImages() {
-        Page<Produto> images = produtoRepository.findAll(this.pageable);
+        PageRequest pageable = PageRequest.of(0, 5);
+        Page<Produto> images = produtoRepository.findAll(pageable);
         return ListImagem.transform(images);
     }
-    
+
     @GetMapping("/precos")
     public Page<PrecoProduto> listPrecoProduto() {
-        Page<Produto> precos = produtoRepository.findAll(this.pageable);
+        PageRequest pageable = PageRequest.of(0, 5);
+        Page<Produto> precos = produtoRepository.findAll(pageable);
         return PrecoProduto.transform(precos);
     }
 
@@ -78,10 +82,9 @@ public class ProdutosController {
 
     @PutMapping("/{idProduto}")
     @Transactional
-    public Produto updateProduto(@PathVariable Long idProduto, @RequestBody Produto produto,
-            UriComponentsBuilder uriComponentsBuilder) {
+    public Produto updateProduto(@PathVariable Long idProduto, @RequestBody Produto produto) {
         produtoService.update(idProduto, produto);
-        produto.setIdProduto(idProduto);        
+        produto.setIdProduto(idProduto);
         return produto;
     }
 
@@ -90,7 +93,6 @@ public class ProdutosController {
     public ResponseEntity<?> removeProduto(@PathVariable Long idProduto) {
         produtoRepository.deleteById(idProduto);
         return ResponseEntity.ok().build();
-    } 
-
+    }
 
 }
