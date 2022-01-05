@@ -40,12 +40,12 @@ public class ProdutosController {
 
     @GetMapping
     public Page<Produto> viewProduto() {
-        Page<Produto> produto = produtoRepository.findAll(this.pageable);
-        return produto;
+        Page<Produto> produtos = produtoRepository.findAll(this.pageable);
+        return produtos;
     }
 
     @GetMapping("/{idProduto}")
-    public ResponseEntity<Produto> datailsProduto(@PathVariable Long idProduto) {
+    public ResponseEntity<Produto> datailsProdutos(@PathVariable Long idProduto) {
         Optional<Produto> produto = produtoRepository.findById(idProduto);
         if (produto.isPresent()) {
             return ResponseEntity.ok(produto.get());

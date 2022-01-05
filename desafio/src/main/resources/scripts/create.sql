@@ -20,7 +20,7 @@ create table cliente(
 create table funcionario(
 	id_funcionario bigint primary key auto_increment,
     nome varchar(255) not null,
-    dono boolean default 0
+    dono boolean not null default 0
 );
 
 create table movimento (
