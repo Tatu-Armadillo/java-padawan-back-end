@@ -23,7 +23,7 @@ public class Movimento {
 
     @Column(name = "codigo_inicial")
     private String codigoInicial;
-    
+
     @Column(name = "codigo_rastreio")
     private String codigoRastreio;
 
@@ -41,6 +41,19 @@ public class Movimento {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "cliente", referencedColumnName = "id_cliente")
     private Cliente cliente;
+
+    public Movimento() {}
+
+    public Movimento(String codigoInicial, String codigoRastreio, LocalDateTime data, String status, Produto produto,
+            Funcionario funcionario, Cliente cliente) {
+        this.codigoInicial = codigoInicial;
+        this.codigoRastreio = codigoRastreio;
+        this.data = data;
+        this.status = status;
+        this.produto = produto;
+        this.funcionario = funcionario;
+        this.cliente = cliente;
+    }
 
     // #region Getters and Setters
     public Long getIdMovimento() {
