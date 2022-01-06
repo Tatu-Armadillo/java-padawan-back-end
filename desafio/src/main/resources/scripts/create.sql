@@ -33,10 +33,17 @@ create table movimento (
     funcionario bigint,
     cliente bigint
 );
--- create table loja();
+
+create table loja(
+    id_loja bigint primary key auto_increment,
+    nome varchar(100),
+    dono bigint
+);
 
 alter table produto add constraint chk_tamanho check (tamanho in ('P', 'M', 'G', 'GG'));
 alter table movimento add constraint chk_status check (status in ('E', 'S', 'D', 'C')); -- E -> Entregue, S-> Saiu para entrega, D -> Devolvido, C -> Cancelado
 alter table movimento add constraint fk_movimento_colaborador foreign key (funcionario) references funcionario (id_funcionario);
 alter table movimento add constraint fk_movimento_produto foreign key (produto) references produto (id_produto);
 alter table movimento add constraint fk_movimento_cliente foreign key (cliente) references cliente (id_cliente);
+alter table loja add constraint fk_loja_funcionario foreign key (dono) references funcionario(id_funcionario);
+alter table loja add constraint fk_loja_funcionario foreign key (dono) references funcionario(id_funcionario);
