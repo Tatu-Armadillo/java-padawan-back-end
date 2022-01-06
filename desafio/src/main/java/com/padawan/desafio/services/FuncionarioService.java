@@ -24,6 +24,7 @@ public class FuncionarioService {
     public Funcionario inserirFuncionario(Long idFuncionario) {
         Optional<Funcionario> funcionario = this.funcionarioRepository.findById(idFuncionario);
         if (funcionario.isPresent()) {
+            this.funcionario = funcionario.get();
             return funcionario.get();
         } else {
             System.out.println("Funcionario não encontrado");
@@ -31,6 +32,15 @@ public class FuncionarioService {
         }
     }
 
+    public Boolean chefe(Long idFuncionario) {
+        Optional<Funcionario> funcionario = this.funcionarioRepository.findById(idFuncionario);
+        if (funcionario.isPresent()) {
+            return funcionario.get().getDono();
+        } else {
+            return false;
+        }
+    }
+    
     public Funcionario getFuncionario() {
         return this.funcionario;
     }
