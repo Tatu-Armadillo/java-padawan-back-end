@@ -11,12 +11,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class FuncionarioService {
  
+    private Funcionario funcionario;
+
     @Autowired
     private FuncionarioRepository funcionarioRepository;
 
-    public void update(Long idFuncionario, Funcionario novoFuncionario) {
-        Funcionario funcionario = this.funcionarioRepository.getById(idFuncionario);
-        funcionario.setNome(novoFuncionario.getNome());
+    public void update(Long idFuncionario, Funcionario funcionario) {
+        this.funcionario = this.funcionarioRepository.getById(idFuncionario);
+        funcionario.setNome(funcionario.getNome());
     }
 
     public Funcionario inserirFuncionario(Long idFuncionario) {
@@ -27,5 +29,9 @@ public class FuncionarioService {
             System.out.println("Funcionario não encontrado");
             return null;
         }
+    }
+
+    public Funcionario getFuncionario() {
+        return this.funcionario;
     }
 }

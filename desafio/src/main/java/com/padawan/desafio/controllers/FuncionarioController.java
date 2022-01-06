@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
-@RequestMapping("/funcionario")
+@RequestMapping("/funcionarios")
 public class FuncionarioController {
 
     private final PageRequest pageable = PageRequest.of(0, 5);

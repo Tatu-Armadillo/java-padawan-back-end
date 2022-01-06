@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
-@RequestMapping("/produto")
+@RequestMapping("/produtos")
 public class ProdutosController {
 
     @Autowired
