@@ -13,11 +13,14 @@ import com.padawan.desafio.repositories.ProdutoRepository;
 import com.padawan.desafio.services.ProdutoService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -93,6 +96,22 @@ public class ProdutosController {
     public ResponseEntity<?> removeProduto(@PathVariable Long idProduto) {
         produtoRepository.deleteById(idProduto);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/relatorio")
+    public ResponseEntity<ByteArrayResource> relatorio() throws Exception {
+        var response = this.produtoService.relatorioProdutos();
+        return getByteArrayResourceResponseEntity(response, "produtos");
+    }
+
+    private static ResponseEntity<ByteArrayResource> getByteArrayResourceResponseEntity(ByteArrayResource response, String texto) {
+        final HttpHeaders headers = new HttpHeaders();
+        final MediaType contentType = MediaType.parseMediaType("application/pdf");
+        headers.add("Access-Controll-Expose-Headers", "Content-Disposition");
+        headers.add("Content-Disposition", "attachment; filename=".concat(texto + ".pdf"));
+        return ResponseEntity.ok()
+                .headers(headers).contentLength(response.contentLength()).contentType(contentType).body(response);
+
     }
 
 }
