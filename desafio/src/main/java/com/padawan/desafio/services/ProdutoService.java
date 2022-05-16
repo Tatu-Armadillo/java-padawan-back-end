@@ -1,9 +1,15 @@
 package com.padawan.desafio.services;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Optional;
 
 import com.itextpdf.html2pdf.HtmlConverter;
@@ -21,6 +27,8 @@ public class ProdutoService {
 
     @Autowired
     private ProdutoRepository produtoRepository;
+
+    private static String path = "D:/VisualStudioCode/Back-end/Java/java-padawan-back-end/desafio/src/main/resources/templates/";
 
     public void update(Long idProduto, Produto produto) {
         produto = this.produtoRepository.getById(idProduto);
@@ -47,12 +55,31 @@ public class ProdutoService {
     }
 
     public ByteArrayResource relatorioProdutos() throws Exception {
-        String path = "D:/VisualStudioCode/Back-end/Java/java-padawan-back-end/desafio/src/main/resources/templates/produtos.html";
-        var fileInputStream = new FileInputStream(path);
-        var fileOutputStream = new FileOutputStream("D:/VisualStudioCode/Back-end/Java/java-padawan-back-end/desafio/src/main/resources/templates/produtos.pdf");
+
+        List<Produto> produtos = produtoRepository.findAll();
+        String html = constructHtmlWithAtributtes(produtos);
+        String pathHtmlTemplate = writeFileHtml(path, "produtos.html", html);
+        String pathPdf = path + "produtos.pdf";
+        var fileInputStream = new FileInputStream(pathHtmlTemplate);
+        var fileOutputStream = new FileOutputStream(pathPdf);
         HtmlConverter.convertToPdf(fileInputStream, fileOutputStream);
-        return new ByteArrayResource(filetoByteArray("D:/VisualStudioCode/Back-end/Java/java-padawan-back-end/desafio/src/main/resources/templates/produtos.pdf"));
+        byte[] baos = filetoByteArray(pathPdf);
+        return new ByteArrayResource(baos);
     }
+    // #region HTML CONVERT PDF
+    // public void montarRelatorio() throws Exception {
+    // String pathIn =
+    // "D:/VisualStudioCode/Back-end/Java/java-padawan-back-end/desafio/src/main/resources/templates/produtos.html";
+    // String pathOut =
+    // "D:/VisualStudioCode/Back-end/Java/java-padawan-back-end/desafio/src/main/resources/templates/produtos.pdf";
+
+    // var fileInputStream = new FileInputStream(pathIn);
+    // var fileOutputStream = new FileOutputStream(pathOut);
+
+    // HtmlConverter.convertToPdf(fileInputStream, fileOutputStream);
+    // byte[] baos = filetoByteArray(pathOut);
+    // return new ByteArrayResource(baos);
+    // }
 
     private byte[] filetoByteArray(String path) {
         byte[] data;
@@ -63,7 +90,6 @@ public class ProdutoService {
             while ((byteReads = input.read()) != -1) {
                 output.write(byteReads);
             }
-
             data = output.toByteArray();
             output.close();
             input.close();
@@ -73,4 +99,42 @@ public class ProdutoService {
             return null;
         }
     }
+
+    // #endregion
+
+    private String writeFileHtml(String filePath, String fileName, String html) throws Exception {
+        filePath = filePath + fileName;
+        File file = new File(filePath);
+        FileReader fr = new FileReader(file);
+        BufferedReader br = new BufferedReader(fr);
+        FileWriter fw = new FileWriter(file);
+        BufferedWriter out = new BufferedWriter(fw);
+        out.write(html);
+        out.flush();
+        out.close();
+        fr.close();
+        br.close();
+        return file.getPath();
+    }
+
+    public String constructHtmlWithAtributtes(List<Produto> produtos) {
+        StringBuilder sb = new StringBuilder();
+        String style = "<style>table {width: 100%; height: 100%;} table, th, td {border: 1px solid;}</style>";
+        sb.append("<html><head>" + style + "</head><body>");
+        sb.append(
+                "<main><table><thead><tr><th>#</th><th>Nome</th><th>Descricao</th><th>Tamanho</th><th>Preco</tr></thead><tbody>");
+
+        for (Produto produto : produtos) {
+            sb.append("<tr>");
+            sb.append("<td>" + produto.getIdProduto() + "</td>");
+            sb.append("<td>" + produto.getNome() + "</td>");
+            sb.append("<td>" + produto.getDescricao() + "</td>");
+            sb.append("<td style=\"text-align: center;\">" + produto.getTamanho() + "</td>");
+            sb.append("<td style=\"text-align: center;\">" + produto.getPreco() + "</td>");
+            sb.append("</tr>");
+        }
+        sb.append("</tbody></table></main></body></html>");
+        return sb.toString();
+    }
+
 }
