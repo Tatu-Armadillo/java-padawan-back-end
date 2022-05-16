@@ -28,7 +28,7 @@ public class ProdutoService {
     @Autowired
     private ProdutoRepository produtoRepository;
 
-    private static String path = "D:/VisualStudioCode/Back-end/Java/java-padawan-back-end/desafio/src/main/resources/templates/";
+    private static String path = "C:/Users/Totem TI/Documents/GitHub/java-padawan-back-end/desafio/src/main/resources/templates/";
 
     public void update(Long idProduto, Produto produto) {
         produto = this.produtoRepository.getById(idProduto);
@@ -54,8 +54,19 @@ public class ProdutoService {
         return this.produto;
     }
 
-    public ByteArrayResource relatorioProdutos() throws Exception {
+    public ByteArrayResource htmlForPdf() throws Exception {
+        String pathIn = path + "/produtos.html";
+        String pathOut = path + "/produtos.pdf";
 
+        var fileInputStream = new FileInputStream(pathIn);
+        var fileOutputStream = new FileOutputStream(pathOut);
+
+        HtmlConverter.convertToPdf(fileInputStream, fileOutputStream);
+        byte[] baos = filetoByteArray(pathOut);
+        return new ByteArrayResource(baos);
+    }
+
+    public ByteArrayResource stringForPdf() throws Exception {
         List<Produto> produtos = produtoRepository.findAll();
         String html = constructHtmlWithAtributtes(produtos);
         String pathHtmlTemplate = writeFileHtml(path, "produtos.html", html);
@@ -66,20 +77,8 @@ public class ProdutoService {
         byte[] baos = filetoByteArray(pathPdf);
         return new ByteArrayResource(baos);
     }
+
     // #region HTML CONVERT PDF
-    // public void montarRelatorio() throws Exception {
-    // String pathIn =
-    // "D:/VisualStudioCode/Back-end/Java/java-padawan-back-end/desafio/src/main/resources/templates/produtos.html";
-    // String pathOut =
-    // "D:/VisualStudioCode/Back-end/Java/java-padawan-back-end/desafio/src/main/resources/templates/produtos.pdf";
-
-    // var fileInputStream = new FileInputStream(pathIn);
-    // var fileOutputStream = new FileOutputStream(pathOut);
-
-    // HtmlConverter.convertToPdf(fileInputStream, fileOutputStream);
-    // byte[] baos = filetoByteArray(pathOut);
-    // return new ByteArrayResource(baos);
-    // }
 
     private byte[] filetoByteArray(String path) {
         byte[] data;
