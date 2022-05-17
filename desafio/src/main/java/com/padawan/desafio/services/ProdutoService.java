@@ -2,6 +2,7 @@ package com.padawan.desafio.services;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,13 +10,36 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.List;
 import java.util.Optional;
 
 import com.itextpdf.html2pdf.HtmlConverter;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.tool.xml.XMLWorker;
+import com.itextpdf.tool.xml.XMLWorkerHelper;
+import com.itextpdf.tool.xml.css.CssFile;
+import com.itextpdf.tool.xml.css.StyleAttrCSSResolver;
+import com.itextpdf.tool.xml.html.Tags;
+import com.itextpdf.tool.xml.parser.XMLParser;
+import com.itextpdf.tool.xml.pipeline.css.CSSResolver;
+import com.itextpdf.tool.xml.pipeline.css.CssResolverPipeline;
+import com.itextpdf.tool.xml.pipeline.end.PdfWriterPipeline;
+import com.itextpdf.tool.xml.pipeline.html.HtmlPipeline;
+import com.itextpdf.tool.xml.pipeline.html.HtmlPipelineContext;
 import com.padawan.desafio.models.Produto;
 import com.padawan.desafio.repositories.ProdutoRepository;
 
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.runtime.RuntimeConstants;
+import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
@@ -28,7 +52,9 @@ public class ProdutoService {
     @Autowired
     private ProdutoRepository produtoRepository;
 
-    private static String path = "D:/VisualStudioCode/Back-end/Java/java-padawan-back-end/desafio/src/main/resources/templates/";
+    // private static String path =
+    // "D:/VisualStudioCode/Back-end/Java/java-padawan-back-end/desafio/src/main/resources/templates/";
+    private static String path = "C:/Users/Totem TI/Documents/GitHub/java-padawan-back-end/desafio/src/main/resources/templates/";;
 
     public void update(Long idProduto, Produto produto) {
         produto = this.produtoRepository.getById(idProduto);
@@ -78,8 +104,6 @@ public class ProdutoService {
         return new ByteArrayResource(baos);
     }
 
-    // #region HTML CONVERT PDF
-
     private byte[] filetoByteArray(String path) {
         byte[] data;
         try {
@@ -98,8 +122,6 @@ public class ProdutoService {
             return null;
         }
     }
-
-    // #endregion
 
     private String writeFileHtml(String filePath, String fileName, String html) throws Exception {
         filePath = filePath + fileName;
@@ -135,6 +157,62 @@ public class ProdutoService {
         }
         sb.append("</tbody></table></main></body></html>");
         return sb.toString();
+    }
+
+    public ByteArrayResource velocityHtmlConvertPdf() throws Exception {
+        VelocityEngine ve = new VelocityEngine();
+        ve.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
+        ve.setProperty("classpath.resource.loader.class",
+                ClasspathResourceLoader.class.getName());
+        ve.init();
+
+        Template template = ve.getTemplate("templates/produtos.vm");
+        VelocityContext context = new VelocityContext();
+        context.put("name", "banana");
+
+        StringWriter writer = new StringWriter();
+        template.merge(context, writer);
+        System.out.println(writer.toString());
+        InputStream css = this.getClass().getResourceAsStream("/templates/produtos.css");
+        return convertHtmlToPdf(writer.toString(), css);
+    }
+
+    public ByteArrayResource convertHtmlToPdf(String contentHtml, InputStream fileCss) {
+        try {
+            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+            final Document pdfDocument = new Document(PageSize.A4);
+            pdfDocument.setMargins(50, 50, 50, 50);
+
+            final PdfWriter writer = PdfWriter.getInstance(pdfDocument, baos);
+
+            pdfDocument.open();
+
+            final CSSResolver cssResolver = new StyleAttrCSSResolver();
+            final CssFile cssFile = XMLWorkerHelper.getCSS(fileCss);
+            cssResolver.addCss(cssFile);
+
+            final HtmlPipelineContext htmlContext = new HtmlPipelineContext(null);
+            htmlContext.setTagFactory(Tags.getHtmlTagProcessorFactory());
+
+            final PdfWriterPipeline pdf = new PdfWriterPipeline(pdfDocument, writer);
+            final HtmlPipeline html = new HtmlPipeline(htmlContext, pdf);
+            final CssResolverPipeline css = new CssResolverPipeline(cssResolver, html);
+
+            final XMLWorker worker = new XMLWorker(css, true);
+            final XMLParser p = new XMLParser(worker);
+            final Reader htmlreader = new BufferedReader(
+                new InputStreamReader(new ByteArrayInputStream(contentHtml.getBytes())));
+            p.parse(htmlreader);
+
+            pdfDocument.close();
+            baos.close();
+            return new ByteArrayResource(baos.toByteArray());
+
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }

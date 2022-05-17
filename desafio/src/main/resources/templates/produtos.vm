@@ -36,7 +36,7 @@
             <tbody>
                 <tr>
                     <td>1</td>
-                    <td>Banana</td>
+                    <td><b>$name</b></td>
                     <td>Não é pra comer</td>
                     <td style="text-align: center;">GG</td>
                     <td style="text-align: center;">21.00</td>

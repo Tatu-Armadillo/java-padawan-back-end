@@ -100,8 +100,9 @@ public class ProdutosController {
 
     @GetMapping("/relatorio")
     public ResponseEntity<ByteArrayResource> relatorio() throws Exception {
-        var response = this.produtoService.htmlForPdf();
+        // var response = this.produtoService.htmlForPdf();
         // var response = this.produtoService.stringForPdf();
+        var response = this.produtoService.velocityHtmlConvertPdf();
         return getByteArrayResourceResponseEntity(response, "produtos");
     }
 
