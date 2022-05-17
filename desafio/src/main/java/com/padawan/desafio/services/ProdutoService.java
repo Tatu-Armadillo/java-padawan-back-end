@@ -28,7 +28,7 @@ public class ProdutoService {
     @Autowired
     private ProdutoRepository produtoRepository;
 
-    private static String path = "C:/Users/Totem TI/Documents/GitHub/java-padawan-back-end/desafio/src/main/resources/templates/";
+    private static String path = "D:/VisualStudioCode/Back-end/Java/java-padawan-back-end/desafio/src/main/resources/templates/";
 
     public void update(Long idProduto, Produto produto) {
         produto = this.produtoRepository.getById(idProduto);
@@ -69,8 +69,8 @@ public class ProdutoService {
     public ByteArrayResource stringForPdf() throws Exception {
         List<Produto> produtos = produtoRepository.findAll();
         String html = constructHtmlWithAtributtes(produtos);
-        String pathHtmlTemplate = writeFileHtml(path, "produtos.html", html);
-        String pathPdf = path + "produtos.pdf";
+        String pathHtmlTemplate = writeFileHtml(path, "produtos2.html", html);
+        String pathPdf = path + "produtos2.pdf";
         var fileInputStream = new FileInputStream(pathHtmlTemplate);
         var fileOutputStream = new FileOutputStream(pathPdf);
         HtmlConverter.convertToPdf(fileInputStream, fileOutputStream);
@@ -103,7 +103,8 @@ public class ProdutoService {
 
     private String writeFileHtml(String filePath, String fileName, String html) throws Exception {
         filePath = filePath + fileName;
-        File file = new File(filePath);
+        File file = new File(filePath); // Arquivo Mocado
+        // File.createTempFile(filePath, fileName); Arquivo em Memoria
         FileReader fr = new FileReader(file);
         BufferedReader br = new BufferedReader(fr);
         FileWriter fw = new FileWriter(file);
