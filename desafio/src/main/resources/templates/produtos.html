@@ -1,49 +1,33 @@
-<html style="width: 100%; background-color: orange; border-style: solid; border-width: 100px; border-color: blue;">
+<html class="html">
 
-<head>
-    <style>
-        table {
-            width: 100%;
-            height: 100%;
-        }
-
-        table,
-        th,
-        td {
-            border: 1px solid;
-        }
-    </style>
-</head>
-
-<body >
-    <main>
-        <h1>Relatorio De produtos</h1>
-        <h1>Relatorio De produtos</h1>
-        <h1>Relatorio De produtos</h1>
-        <h1>Relatorio De produtos</h1>
-        <h1>Relatorio De produtos</h1>
-        <h1>Relatorio De produtos</h1>
-        <table>
+<div class="body">
+    <img src="${cabecalho}" alt="cabecalho" />
+    <div class="main">
+        <h1 class="h1">Relatorio De produtos</h1>
+        <table class="table">
             <thead>
                 <tr>
-                    <th>#</th>
-                    <th>Nome</th>
-                    <th>Descricao</th>
-                    <th>Tamanho</th>
-                    <th>Preco
+                    <th class="th">#</th>
+                    <th class="th">Nome</th>
+                    <th class="th">Descricao</th>
+                    <th class="th">Tamanho</th>
+                    <th class="th">Preco</th>
                 </tr>
             </thead>
             <tbody>
+                #foreach($produto in $produtos)
                 <tr>
-                    <td>1</td>
-                    <td>Banana</td>
-                    <td>Não é pra comer</td>
-                    <td style="text-align: center;">GG</td>
-                    <td style="text-align: center;">21.00</td>
+                    <td class="td" style="text-align: center;">$produto.idProduto</td>
+                    <td class="td">$produto.nome</td>
+                    <td class="td">$produto.descricao</td>
+                    <td class="td" style="text-align: center;">$produto.tamanho</td>
+                    <td class="td" style="text-align: center;">$produto.preco</td>
                 </tr>
+                #end
             </tbody>
         </table>
-    </main>
-</body>
+    </div>
+    <img src="${rodape}" class="rodape" alt="rodape" />
+</div>
 
 </html>

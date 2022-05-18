@@ -12,7 +12,6 @@ import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.Optional;
@@ -54,7 +53,9 @@ public class ProdutoService {
 
     // private static String path =
     // "D:/VisualStudioCode/Back-end/Java/java-padawan-back-end/desafio/src/main/resources/templates/";
-    private static String path = "C:/Users/Totem TI/Documents/GitHub/java-padawan-back-end/desafio/src/main/resources/templates/";;
+    private static String path = "C:/Users/Totem TI/Documents/GitHub/java-padawan-back-end/desafio/src/main/resources/templates/";
+    private static String pathImg = "C:/Users/Totem TI/Documents/GitHub/java-padawan-back-end/desafio/src/main/resources/static/";
+
 
     public void update(Long idProduto, Produto produto) {
         produto = this.produtoRepository.getById(idProduto);
@@ -166,9 +167,9 @@ public class ProdutoService {
                 ClasspathResourceLoader.class.getName());
         ve.init();
 
-        Template template = ve.getTemplate("templates/produtos.vm");
+        Template template = ve.getTemplate("templates/produtos.html");
         VelocityContext context = new VelocityContext();
-        context.put("name", "banana");
+        mapObjectHtml(context);
 
         StringWriter writer = new StringWriter();
         template.merge(context, writer);
@@ -177,16 +178,17 @@ public class ProdutoService {
         return convertHtmlToPdf(writer.toString(), css);
     }
 
-    public ByteArrayResource convertHtmlToPdf(String contentHtml, InputStream fileCss) {
+    private ByteArrayResource convertHtmlToPdf(String contentHtml, InputStream fileCss) {
         try {
             final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-            final Document pdfDocument = new Document(PageSize.A4);
-            pdfDocument.setMargins(50, 50, 50, 50);
+            final Document pdfDocument = new Document(PageSize.A4.rotate());
+            pdfDocument.setMargins(0, 0, 0, 0);
 
             final PdfWriter writer = PdfWriter.getInstance(pdfDocument, baos);
 
             pdfDocument.open();
+            writer.open();
 
             final CSSResolver cssResolver = new StyleAttrCSSResolver();
             final CssFile cssFile = XMLWorkerHelper.getCSS(fileCss);
@@ -205,6 +207,7 @@ public class ProdutoService {
                 new InputStreamReader(new ByteArrayInputStream(contentHtml.getBytes())));
             p.parse(htmlreader);
 
+            writer.close();
             pdfDocument.close();
             baos.close();
             return new ByteArrayResource(baos.toByteArray());
@@ -214,5 +217,13 @@ public class ProdutoService {
         }
         return null;
     }
+
+    private void mapObjectHtml(VelocityContext context) {
+        List<Produto> produtos = produtoRepository.findAll();
+        context.put("produtos", produtos);
+        context.put("cabecalho", pathImg + "cabecalho.png");
+        context.put("rodape", pathImg + "rodape.png");
+    
+    } 
 
 }
